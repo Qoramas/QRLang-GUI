@@ -1,17 +1,22 @@
 import java.awt.*;
-import java.util.*;
 
 import javax.swing.*;
-
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.net.URL;
 
 import javax.swing.plaf.metal.MetalIconFactory;
 
 import qor.Compressor;
+import qor.IllegalCharacterException;
 
+
+/**
+ * GUI for the QRLang project. This takes valid QRLang code and compresses it down to its string
+ * form and returns the QR code for it.
+ * @author Samuel Haycock
+ *
+ */
 public class Window extends JFrame {
 
 	private final static int WIDTH = 720;
@@ -114,13 +119,18 @@ public class Window extends JFrame {
 		});
 		
 		compressButton.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent ae) {
 				if(codeArea.getText().equals("")){
 					Statics.errorMessage("No code to compress");
 				} else {
-					outputArea.setText(c.compress(codeArea.getText()));
-					qrCode = Statics.getQR(outputArea.getText(), 180, 180);
-					imageLabel.setIcon(new ImageIcon(qrCode));
+					try {
+						outputArea.setText(c.compress(codeArea.getText()));
+						qrCode = Statics.getQR(outputArea.getText(), 180, 180);
+						imageLabel.setIcon(new ImageIcon(qrCode));
+					} catch (IllegalCharacterException e) {
+						Statics.errorMessage("Illegal Character : " + e.getIllegalCharacter());
+					}
+					
 				}
 			}
 		});
